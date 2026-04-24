@@ -26,6 +26,11 @@ a collection of chill web games served from github pages.
 4. push the branch — the `publish game branch` action auto-copies `games/<slug>/` into `main`, rebuilds `games.json`, and triggers a github pages rebuild
 5. the landing page at `https://mystic-poe.github.io/silly-little-games/` automatically adds a card for it with the author attribution
 
+## contributing
+
+- See [`CONTRIBUTING.md`](./CONTRIBUTING.md) for the full onboarding guide.
+- If you use Claude Code, [`CLAUDE.md`](./CLAUDE.md) is loaded automatically and documents the conventions in more detail.
+
 ## games
 
 - **brick breaker** — action/arcade, chill & casual
