@@ -1,9 +1,13 @@
 :root {
-  --bg-1: #1a1a2e;
-  --bg-2: #16213e;
+  --bg: #000;
   --fg: #e8e8f0;
-  --card-bg: rgba(255, 255, 255, 0.04);
-  --card-hover: rgba(255, 255, 255, 0.08);
+  --muted: #8a8a95;
+  --window-bar: #161616;
+  --window-bg: #0a0a0a;
+  --border: rgba(255, 255, 255, 0.08);
+  --border-strong: rgba(255, 255, 255, 0.22);
+  --input-bg: rgba(255, 255, 255, 0.04);
+  --input-focus: rgba(255, 255, 255, 0.08);
 }
 
 * { box-sizing: border-box; }
@@ -11,92 +15,156 @@
 body {
   margin: 0;
   min-height: 100vh;
-  background: linear-gradient(135deg, var(--bg-1), var(--bg-2));
+  background: var(--bg);
   color: var(--fg);
   font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
-  padding: 4rem 2rem;
+  padding: 3rem 1.5rem 2rem;
 }
 
 header {
-  max-width: 800px;
+  max-width: 960px;
   margin: 0 auto 3rem;
   text-align: center;
 }
 
 h1 {
-  font-size: 2.5rem;
+  font-size: 2rem;
   font-weight: 200;
-  letter-spacing: 0.15em;
-  margin: 0 0 0.5rem;
+  letter-spacing: 0.2em;
+  margin: 0 0 1.75rem;
 }
 
-header p {
-  opacity: 0.7;
-  font-weight: 300;
-  margin: 0;
+#search {
+  width: 100%;
+  max-width: 500px;
+  padding: 0.75rem 1.1rem;
+  background: var(--input-bg);
+  color: var(--fg);
+  border: 1px solid var(--border);
+  border-radius: 999px;
+  font-size: 0.95rem;
+  font-family: inherit;
+  outline: none;
+  transition: background 0.15s, border-color 0.15s;
 }
+
+#search:focus {
+  background: var(--input-focus);
+  border-color: var(--border-strong);
+}
+
+#search::placeholder { color: var(--muted); }
 
 .games {
-  max-width: 800px;
+  max-width: 960px;
   margin: 0 auto;
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
-  gap: 1.5rem;
+  grid-template-columns: repeat(auto-fill, 280px);
+  justify-content: center;
+  gap: 2rem;
 }
 
 .card {
-  background: var(--card-bg);
-  border-radius: 12px;
-  padding: 1.5rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.9rem;
+  width: 280px;
   text-decoration: none;
   color: var(--fg);
-  transition: background 0.2s, transform 0.2s;
-  display: block;
+  transition: transform 0.2s;
 }
 
-.card:hover {
-  background: var(--card-hover);
-  transform: translateY(-2px);
-}
+.card:hover { transform: translateY(-4px); }
+.card.hidden { display: none; }
 
-.card-art {
-  height: 120px;
+.window {
+  border: 1px solid var(--border);
   border-radius: 8px;
-  margin-bottom: 1rem;
+  overflow: hidden;
+  background: var(--window-bg);
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.6);
+  transition: border-color 0.2s;
 }
 
-.brick-breaker-art {
-  background: linear-gradient(180deg,
-    #ffd6a5 0 16.6%,
-    #fdffb6 16.6% 33.3%,
-    #caffbf 33.3% 50%,
-    #9bf6ff 50% 66.6%,
-    #a0c4ff 66.6% 83.3%,
-    #bdb2ff 83.3% 100%);
-  opacity: 0.85;
+.card:hover .window { border-color: var(--border-strong); }
+
+.window-bar {
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+  padding: 0.55rem 0.75rem;
+  background: var(--window-bar);
+  border-bottom: 1px solid var(--border);
 }
 
-.card h2 {
-  font-size: 1.2rem;
+.dot {
+  width: 11px;
+  height: 11px;
+  border-radius: 50%;
+  display: inline-block;
+}
+.dot.red    { background: #ff5f56; }
+.dot.yellow { background: #ffbd2e; }
+.dot.green  { background: #27c93f; }
+
+.window-title {
+  margin-left: auto;
+  font-size: 0.72rem;
+  color: var(--muted);
+  letter-spacing: 0.08em;
+}
+
+.preview {
+  position: relative;
+  width: 280px;
+  height: 210px;
+  overflow: hidden;
+  background: #111;
+}
+
+.preview iframe {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 800px;
+  height: 600px;
+  border: 0;
+  pointer-events: none;
+  transform: scale(0.35);
+  transform-origin: top left;
+}
+
+.meta h2 {
+  font-size: 1rem;
   font-weight: 400;
-  margin: 0 0 0.25rem;
+  margin: 0 0 0.2rem;
   letter-spacing: 0.05em;
 }
 
-.card p {
-  font-size: 0.85rem;
-  opacity: 0.6;
+.meta p {
+  font-size: 0.8rem;
   margin: 0;
+  color: var(--muted);
+}
+
+.empty {
+  max-width: 960px;
+  margin: 1.5rem auto 0;
+  text-align: center;
+  color: var(--muted);
+  font-size: 0.9rem;
 }
 
 footer {
-  max-width: 800px;
+  max-width: 960px;
   margin: 4rem auto 0;
   text-align: center;
-  opacity: 0.5;
-  font-size: 0.85rem;
+  color: var(--muted);
+  font-size: 0.8rem;
 }
 
 footer a {
-  color: var(--fg);
+  color: var(--muted);
+  text-decoration: underline;
+  text-decoration-color: rgba(255, 255, 255, 0.2);
 }
