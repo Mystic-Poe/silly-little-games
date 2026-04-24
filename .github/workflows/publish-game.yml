@@ -1,0 +1,67 @@
+name: publish game branch
+
+on:
+  push:
+    branches: ['game/*']
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+concurrency:
+  group: publish-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  publish:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Derive game name from branch
+        id: meta
+        run: |
+          BRANCH="${GITHUB_REF#refs/heads/}"
+          NAME="${BRANCH#game/}"
+          if [ -z "$NAME" ] || [ "$NAME" = "$BRANCH" ]; then
+            echo "::error::Branch '$BRANCH' is not a game/* branch"
+            exit 1
+          fi
+          echo "branch=$BRANCH" >> "$GITHUB_OUTPUT"
+          echo "name=$NAME" >> "$GITHUB_OUTPUT"
+
+      - name: Check out game branch
+        uses: actions/checkout@v4
+        with:
+          path: source
+
+      - name: Check out main
+        uses: actions/checkout@v4
+        with:
+          ref: main
+          path: target
+          token: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Sync games/${{ steps.meta.outputs.name }} into main
+        run: |
+          SRC="source/games/${{ steps.meta.outputs.name }}"
+          DST="target/games/${{ steps.meta.outputs.name }}"
+          if [ ! -d "$SRC" ]; then
+            echo "::error::Expected folder $SRC on branch ${{ steps.meta.outputs.branch }}."
+            echo "Game branches must contain games/<name>/ matching the branch name."
+            exit 1
+          fi
+          rm -rf "$DST"
+          mkdir -p "$(dirname "$DST")"
+          cp -R "$SRC" "$DST"
+
+      - name: Commit and push to main
+        working-directory: target
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add "games/${{ steps.meta.outputs.name }}"
+          if git diff --cached --quiet; then
+            echo "No changes to publish for ${{ steps.meta.outputs.name }}."
+            exit 0
+          fi
+          git commit -m "publish ${{ steps.meta.outputs.name }} from ${{ steps.meta.outputs.branch }}"
+          git push origin main
