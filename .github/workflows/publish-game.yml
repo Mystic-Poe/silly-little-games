@@ -40,25 +40,69 @@ jobs:
           path: target
           token: ${{ secrets.GITHUB_TOKEN }}
 
-      - name: Sync games/${{ steps.meta.outputs.name }} into main
+      - name: Validate game folder and metadata
         run: |
           SRC="source/games/${{ steps.meta.outputs.name }}"
-          DST="target/games/${{ steps.meta.outputs.name }}"
+          META="$SRC/game.json"
           if [ ! -d "$SRC" ]; then
             echo "::error::Expected folder $SRC on branch ${{ steps.meta.outputs.branch }}."
             echo "Game branches must contain games/<name>/ matching the branch name."
             exit 1
           fi
+          if [ ! -f "$META" ]; then
+            echo "::error::Missing $META."
+            echo 'Each game must include a game.json with {"name": "...", "tags": [...], "author": "..."}.'
+            exit 1
+          fi
+          python3 - "$META" <<'PY'
+          import json, sys
+          path = sys.argv[1]
+          meta = json.load(open(path))
+          for key in ('name', 'author'):
+              if not isinstance(meta.get(key), str) or not meta[key].strip():
+                  print(f"::error::{path} missing required string field '{key}'")
+                  sys.exit(1)
+          if 'tags' in meta and not (isinstance(meta['tags'], list) and all(isinstance(t, str) for t in meta['tags'])):
+              print(f"::error::{path} field 'tags' must be a list of strings")
+              sys.exit(1)
+          PY
+
+      - name: Sync games/${{ steps.meta.outputs.name }} into main
+        run: |
+          SRC="source/games/${{ steps.meta.outputs.name }}"
+          DST="target/games/${{ steps.meta.outputs.name }}"
           rm -rf "$DST"
           mkdir -p "$(dirname "$DST")"
           cp -R "$SRC" "$DST"
+
+      - name: Rebuild games.json registry
+        working-directory: target
+        run: |
+          python3 - <<'PY'
+          import json, os
+          games = []
+          games_dir = 'games'
+          if os.path.isdir(games_dir):
+              for slug in sorted(os.listdir(games_dir)):
+                  meta_path = os.path.join(games_dir, slug, 'game.json')
+                  if not os.path.isfile(meta_path):
+                      print(f"warn: {slug} has no game.json — skipping")
+                      continue
+                  with open(meta_path) as f:
+                      meta = json.load(f)
+                  meta['slug'] = slug
+                  games.append(meta)
+          with open('games.json', 'w') as f:
+              json.dump(games, f, indent=2)
+              f.write('\n')
+          PY
 
       - name: Commit and push to main
         working-directory: target
         run: |
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
-          git add "games/${{ steps.meta.outputs.name }}"
+          git add "games/${{ steps.meta.outputs.name }}" games.json
           if git diff --cached --quiet; then
             echo "No changes to publish for ${{ steps.meta.outputs.name }}."
             exit 0

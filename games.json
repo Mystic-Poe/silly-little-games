@@ -1,0 +1,14 @@
+[
+  {
+    "slug": "brick-breaker",
+    "name": "brick breaker",
+    "tags": ["action", "arcade", "casual"],
+    "author": "claude"
+  },
+  {
+    "slug": "memory-match",
+    "name": "memory match",
+    "tags": ["puzzle", "memory", "chill"],
+    "author": "claude"
+  }
+]

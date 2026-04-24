@@ -137,14 +137,22 @@ h1 {
 .meta h2 {
   font-size: 1rem;
   font-weight: 400;
-  margin: 0 0 0.2rem;
+  margin: 0 0 0.25rem;
   letter-spacing: 0.05em;
 }
 
-.meta p {
-  font-size: 0.8rem;
+.meta .tags {
+  font-size: 0.78rem;
+  margin: 0 0 0.25rem;
+  color: var(--muted);
+}
+
+.meta .author {
+  font-size: 0.72rem;
   margin: 0;
   color: var(--muted);
+  opacity: 0.7;
+  letter-spacing: 0.04em;
 }
 
 .empty {
