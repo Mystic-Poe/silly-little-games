@@ -20,3 +20,4 @@ a collection of chill web games served from github pages.
 ## games
 
 - **brick breaker** — action/arcade, chill & casual
+- **memory match** — puzzle, memory, chill
