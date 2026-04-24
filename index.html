@@ -9,17 +9,37 @@
 <body>
   <header>
     <h1>silly little games</h1>
-    <p>a collection of chill web games. no accounts, no ads, no pressure.</p>
+    <input
+      id="search"
+      type="search"
+      placeholder="search games..."
+      autocomplete="off"
+      aria-label="search games"
+    >
   </header>
-  <main class="games">
-    <a href="./games/brick-breaker/" class="card">
-      <div class="card-art brick-breaker-art"></div>
-      <h2>brick breaker</h2>
-      <p>action · arcade · casual</p>
+  <main class="games" id="games">
+    <a href="./games/brick-breaker/" class="card" data-name="brick breaker" data-tags="action arcade casual">
+      <div class="window">
+        <div class="window-bar">
+          <span class="dot red"></span>
+          <span class="dot yellow"></span>
+          <span class="dot green"></span>
+          <span class="window-title">brick breaker</span>
+        </div>
+        <div class="preview">
+          <iframe src="./games/brick-breaker/" title="brick breaker preview" loading="lazy" scrolling="no" tabindex="-1"></iframe>
+        </div>
+      </div>
+      <div class="meta">
+        <h2>brick breaker</h2>
+        <p>action · arcade · casual</p>
+      </div>
     </a>
   </main>
+  <p id="empty" class="empty" hidden>no games match that search.</p>
   <footer>
-    <p>built with vanilla html/js · <a href="https://github.com/Mystic-Poe/silly-little-games">source</a></p>
+    <p>vanilla html/js · <a href="https://github.com/Mystic-Poe/silly-little-games">source</a></p>
   </footer>
+  <script src="./app.js"></script>
 </body>
 </html>
